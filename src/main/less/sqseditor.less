@@ -1,0 +1,50 @@
+@import 'variables.less';
+
+.sheet{
+    font-family: @BASE_FONT;
+    font-size: @BASE_FONT_SIZE;
+    width: @SHEET_WIDTH;
+    margin: 40px auto;
+
+    textarea{
+	font-family: @BASE_FONT;
+	font-size: @BASE_FONT_SIZE;
+	width: 100%;
+	border-style: none;
+    }
+
+    .editable{
+	padding: 10px;
+	cursor: pointer;
+    }
+    .editable:hover{
+	padding: 8px;
+	border: dashed 2px #ccc;
+    }
+    
+    .hidden{
+	display: none;
+    }
+    .show{
+	display: block;
+    }
+
+    .header{
+	h2:before{
+	    content: 'タイトル：';	    
+	}
+    }
+
+    .p{
+    }
+
+    .select1{
+	list-style: none;
+	padding: 0;
+	display: table;
+
+	li{
+	    display: table-cell;
+	}
+    }
+}
