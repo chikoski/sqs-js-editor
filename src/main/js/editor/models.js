@@ -69,6 +69,9 @@ define(["underscore", "backbone"], function(_, Backbone){
     });
 
     var SelectOne = SQSBoxContent.extend({
+	defaults: {
+	    title: new Hint()
+	},
 	model: Item
     });
 
