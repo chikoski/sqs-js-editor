@@ -75,20 +75,23 @@ define(["underscore", "backbone"], function(_, Backbone){
 	model: Item
     });
 
+    var Group = SQSBoxContent.extend({
+	model: Hint
+    });
+
     /*
      * MatrixForms
      */
 
     var MatrixRows  = SQSBoxContent.extend({
-	model: SelectOne
     });
 
     var MatrixColumns = SQSBoxContent.extend({
-	model: Hint
     });
 
     var MatrixForm = Backbone.Model.extend({
 	defaults: {
+	    title: new Hint(),
 	    rows: new MatrixRows(),
 	    columns: new MatrixColumns()
 	}
@@ -101,6 +104,10 @@ define(["underscore", "backbone"], function(_, Backbone){
 	"Item": Item,
 	"TextArea": TextArea,
 	"Sheet": Sheet,
-	"SelectOne": SelectOne
+	"SelectOne": SelectOne,
+	"MatrixForm": MatrixForm,
+	"ColumnArray": MatrixColumns,
+	"RowArray": MatrixRows,
+	"Group": Group
     };
 });

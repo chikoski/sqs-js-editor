@@ -35,7 +35,7 @@ define(["jquery", "models"], function($, model){
 		var tagname = tagnameOf(elm);
 
 		if(tagname == "xforms:hint"){
-		    ret.title = hint.call(elm);
+		    ret.set({title: hint.call(elm)});
 		}else if(tagname == "xforms:item"){
 		    ret.add(item.call(elm));
 		}
@@ -43,19 +43,50 @@ define(["jquery", "models"], function($, model){
 	    return ret;
 	};
 
-	var matrixForm = function(){
-/*
-	    var matrix = new model.MatrixForm();
+	var group = function(){
 	    var self = this;
-	    var elms = {};
-	    this.children().each(function(){
+	    var ret = new model.Group();
+	    self.children().each(function(){
+		ret.add(hint.call($(this)));
+	    });
+	    return ret;
+	};
+
+	var rowArray = function(){
+	    var self = this;
+	    var ret = new model.RowArray();
+	    self.children().each(function(){
+		ret.add(group.call($(this)));
+	    });
+	    return ret;
+	};
+	
+	var columnArray = function(){
+	    var self = this;
+	    var ret = new model.ColumnArray();
+	    self.children().each(function(){
+		ret.add(selectOne.call($(this)));
+	    });
+
+	    return ret;
+	};
+
+	var matrixForm = function(){
+	    var self = $(this);
+	    var params = {};
+	    self.children().each(function(){
 		var elm = $(this);
 		var tagname = tagnameOf(elm);
-		elms[tagname.replace(/^[^:]+:/, "")] = elm.eq(0);
+
+		if(tagname == "xforms:hint"){
+		    params.title = hint.call(elm);
+		}else if(tagname == "sqs:row-array"){
+		    params.rows = rowArray.call(elm);
+		}else if(tagname == "sqs:column-array"){
+		    params.columns = columnArray.call(elm);
+		}
 	    });
-	    
-	    return matrix;
-*/
+	    return new model.MatrixForm(params);
 	};
 
 	var h = function(){
