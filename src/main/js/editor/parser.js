@@ -4,9 +4,43 @@ define(["jquery", "models"], function($, model){
 	this.product = null;
     };
     Parser.prototype = (function(){
-	
+
+	var item = function(){
+	    var params = {
+		label: "",
+		value: 0
+	    };
+	    var self = this;
+	    this.children().each(function(){
+		var elm = $(this);
+		var tagname = tagnameOf(elm);
+
+		if(tagname == "xforms:label"){
+		    params.label = elm.text();
+		}else if(tagname == "xforms:value"){
+		    var i = parseInt(elm.text());
+		    if(!isNaN(i)){
+			params.value = i;
+		    }
+		}
+	    });
+	    return new model.Item(params);
+	};
+
 	var selectOne = function(){
-	    return new model.SelectOne();
+	    var ret = new model.SelectOne();
+	    var self = this;
+	    self.children().each(function(){
+		var elm = $(this);
+		var tagname = tagnameOf(elm);
+
+		if(tagname == "xforms:hint"){
+		    ret.title = hint.call(elm);
+		}else if(tagname == "xforms:item"){
+		    ret.add(item.call(elm));
+		}
+	    });
+	    return ret;
 	};
 
 	var matrixForm = function(){
@@ -32,27 +66,6 @@ define(["jquery", "models"], function($, model){
 	    return new model.Hint({text: this.text()});
 	};
 	
-	var item = function(){
-	    var params = {
-		label: "",
-		value: 0
-	    };
-	    var self = this;
-	    this.children().each(function(){
-		var elm = $(this);
-		var tagname = tagnameOf(elm);
-		if(tagname == "xforms:label"){
-		    params.label = elm.text();
-		}else if(tagname == "xforms:value"){
-		    var i = parseInt(elm.text());
-		    if(!isNaN(i)){
-			params.value = i;
-		    }
-		}
-		return new model.Item(params);
-	    });
-	};
-	
 	var paragraph = function(){
 	    return new model.Paragraph({text: this.text()});
 	};
@@ -65,7 +78,7 @@ define(["jquery", "models"], function($, model){
 	    return elm.get(0).tagName.toLowerCase();
 	};
 
-	var table = {
+	var routingTable ={
 	    "h": h,
 	    "xforms:select1": selectOne,
 	    "sqs:matrix-forms": matrixForm,
@@ -74,32 +87,39 @@ define(["jquery", "models"], function($, model){
 	    "p": paragraph,
 	    "xforms:textarea": textarea
 	};
-	
-	var doParse = function(elm, parent){
-	    var tag = tagnameOf(elm);
-	    var func = table[tag];
-	    var ret = null;
-	    if(func != null){
-		ret = func.call(elm);
+
+	var route = function(elm){
+	    elm = $(elm || this);
+	    var tagname = tagnameOf(elm);
+	    var f = routingTable[tagname];
+	    if(f){
+		return f.call(elm);
 	    }
-	    elm.children().each(function(){
-		doParse($(this), ret || parent);
+	    return null;
+	};
+
+	var body = function(sheet){
+	    var self = this;
+	    self.children().each(function(){
+		var ret = route(this);
+		if(ret){
+		    sheet.add(ret);
+		}
 	    });
-	    if(parent != null && parent.add != null && ret != null){
-		parent.add(ret);
-	    }
+	    return sheet;
+	};
+
+	var sheet = function(){
+	    var ret = new model.Sheet();
+	    ret.set({title: this.find("title").eq(0).text()});
+	    body.call(this.find("body"), ret);
 	    return ret;
 	};
 	
 	return {
 	    parse: function(sqs){
 		var self = this;
-		self.product = new model.Sheet();
-
-		$(sqs).children().each(function(elm){
-		    doParse($(this), self.product);
-		});
-		
+		self.product = sheet.call($(sqs));
 		return self.product;
 	    }
 	};
