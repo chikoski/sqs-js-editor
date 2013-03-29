@@ -1,10 +1,26 @@
 @import 'variables.less';
 
+body{
+    margin: 0;
+    padding: 0;
+}
+
 .sheet{
     font-family: @BASE_FONT;
     font-size: @BASE_FONT_SIZE;
     width: @SHEET_WIDTH;
-    margin: 40px auto;
+    margin: 0px auto;
+    position: relative;
+    padding-top: 80px;
+
+    .header{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background-color: #ccc;
+	padding: 8px;
+    }
 
     textarea{
 	font-family: @BASE_FONT;
