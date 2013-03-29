@@ -4,7 +4,7 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
      *  PhrasingContent Views
      */
     var SQSPhrasingContentView = Backbone.View.extend({
-	events :{},
+	attrname: "text",
 	render: function(){
 	    this.model.bind("change", this._update, this);
 	    this.$el = this.template.tmpl(this.model.toJSON());
@@ -33,11 +33,11 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	    this.editable.toggleClass("hidden");
 	},
 	_updateModel: function(){
-	    this.model.set("text", this.input.val());
+	    this.model.set(this.attrname, this.input.val());
 	    this._cancel_edit();
 	},
 	_update: function(){
-	    var val = this.model.get("text");
+	    var val = this.model.get(this.attrname);
 	    this.input.val(val);
 	    this.editable.text(val);
 	}
@@ -56,7 +56,8 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
     });
     
     var ItemView = SQSPhrasingContentView.extend({
-	template: $("#sqseditor-template-item")
+	template: $("#sqseditor-template-item"),
+	attrname: "label"
     });
 
     var TextareaView = SQSPhrasingContentView.extend({
