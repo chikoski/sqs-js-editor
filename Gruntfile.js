@@ -33,6 +33,10 @@ module.exports = function(grunt) {
 	    parser: {
 		src: '<%= dirs.src.editor %>/parser.js',
 		dest: '<%= dirs.dest.js %>/parser.js'
+	    },
+	    editor: {
+		src: '<%= dirs.src.editor %>/editor.js',
+		dest: '<%= dirs.dest.js %>/editor.js'
 	    }
 	},
 	less: {
@@ -53,6 +57,10 @@ module.exports = function(grunt) {
 	    parser: {
 		src: '<%= dirs.dest.js %>/parser.js',
 		dest: '<%= dirs.dest.js %>/parser.min.js'
+	    },
+	    parser: {
+		src: '<%= dirs.dest.js %>/editor.js',
+		dest: '<%= dirs.dest.js %>/editor.min.js'
 	    },
 	    boot: {
 		src: '<%= dirs.dest.js %>/boot.js',
