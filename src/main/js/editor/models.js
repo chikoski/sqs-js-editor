@@ -23,14 +23,15 @@ define(["underscore", "backbone"], function(_, Backbone){
     var Hint = SQSPhrasingContent.extend({
     });
 
-    var TextArea = SQSPhrasingContent.extend({
+    var Textarea = SQSPhrasingContent.extend({
 	defaults: {
-	    title: new Hint("")
+	    title: null
 	},
-	validate: function(attrs){
-	    if(_.isString(attrs.title)){
-		attrs.title = new Hint(attrs.title);
+	title: function(){
+	    if(this.get("title") == null){
+		this.set("title", new Hint(""));
 	    }
+	    return this.get("title");
 	}
     });
 
@@ -66,17 +67,52 @@ define(["underscore", "backbone"], function(_, Backbone){
     });
     
     var Sheet = SQSBoxContent.extend({
+	title: ""
     });
-
+/*
     var SelectOne = SQSBoxContent.extend({
-	defaults: {
-	    title: new Hint()
-	},
+	title: new Hint(),
 	model: Item
     });
+*/
 
-    var Group = SQSBoxContent.extend({
+    var Items = Backbone.Collection.extend({
+	model: Item
+    });
+    
+    var SelectOne = Backbone.Model.extend({
+	defaults: {
+	    title: null,
+	    options: null
+	},
+	options: function(){
+	    if(this.get("options") == null){
+		this.set("options", new Items());
+	    }
+	    return this.get("options");
+	},
+	title: function(){
+	    if(this.get("title") == null){
+		this.set("title", new Hint());
+	    }
+	    return this.get("title");
+	},
+	add: function(item){
+	    this.options().add(item);
+	},
+	remove: function(item){
+	    this.options().remove(item);
+	}
+    });
+
+    var Groups = SQSBoxContent.extend({
 	model: Hint
+    });
+
+    var Group = Backbone.Model.extend({
+	defults: {
+	    hint: null
+	}
     });
 
     /*
@@ -84,16 +120,18 @@ define(["underscore", "backbone"], function(_, Backbone){
      */
 
     var MatrixRows  = SQSBoxContent.extend({
+	model: Group
     });
 
     var MatrixColumns = SQSBoxContent.extend({
+	model: SelectOne
     });
 
     var MatrixForm = Backbone.Model.extend({
 	defaults: {
-	    title: new Hint(),
-	    rows: new MatrixRows(),
-	    columns: new MatrixColumns()
+	    title: null,
+	    rows: null,
+	    columns: null
 	}
     });
 
@@ -102,7 +140,7 @@ define(["underscore", "backbone"], function(_, Backbone){
 	"Paragraph": Paragraph,
 	"Hint": Hint,
 	"Item": Item,
-	"TextArea": TextArea,
+	"Textarea": Textarea,
 	"Sheet": Sheet,
 	"SelectOne": SelectOne,
 	"MatrixForm": MatrixForm,
