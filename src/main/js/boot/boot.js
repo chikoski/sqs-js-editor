@@ -5,7 +5,6 @@ require(["editor", "jquery"], function(App, $){
 	dataType: "xml",
 	success: function(data){
 	    var sqs = parser.parse(data);
-	    console.log(sqs.toJSON());
 	    var editor = new App.Editor(sqs, $("#container"));
 	    editor.render();
 	}
