@@ -35,7 +35,7 @@ define(["jquery", "models"], function($, model){
 		var tagname = tagnameOf(elm);
 
 		if(tagname == "xforms:hint"){
-		    ret.set({title: hint.call(elm)});
+		    ret.set("title", hint.call(elm));
 		}else if(tagname == "xforms:item"){
 		    ret.add(item.call(elm));
 		}
@@ -47,7 +47,7 @@ define(["jquery", "models"], function($, model){
 	    var self = this;
 	    var ret = new model.Group();
 	    self.children().each(function(){
-		ret.add(hint.call($(this)));
+		ret.set("hint", hint.call($(this)));
 	    });
 	    return ret;
 	};
@@ -67,8 +67,13 @@ define(["jquery", "models"], function($, model){
 	    self.children().each(function(){
 		ret.add(selectOne.call($(this)));
 	    });
+	    
 
 	    return ret;
+	};
+
+	var matrixFormChildren = function(params){
+
 	};
 
 	var matrixForm = function(){
@@ -86,6 +91,7 @@ define(["jquery", "models"], function($, model){
 		    params.columns = columnArray.call(elm);
 		}
 	    });
+	    
 	    return new model.MatrixForm(params);
 	};
 
@@ -102,7 +108,12 @@ define(["jquery", "models"], function($, model){
 	};
 
 	var textarea = function(){
-	    return new model.TextArea({text: this.text()});
+	    var self = this;
+	    var ret = new model.Textarea({text: self.text()});
+	    self.children().each(function(){
+		ret.set({title: hint.call($(this))});
+	    });
+	    return ret;
 	};
 
 	var tagnameOf = function(elm){
@@ -142,7 +153,7 @@ define(["jquery", "models"], function($, model){
 
 	var sheet = function(){
 	    var ret = new model.Sheet();
-	    ret.set({title: this.find("title").eq(0).text()});
+	    ret.title = this.find("title").eq(0).text();
 	    body.call(this.find("body"), ret);
 	    return ret;
 	};
