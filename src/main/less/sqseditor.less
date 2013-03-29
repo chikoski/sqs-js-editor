@@ -1,4 +1,5 @@
 @import 'variables.less';
+@import 'mixin.less';
 
 body{
     margin: 0;
@@ -12,6 +13,12 @@ body{
     margin: 0px auto;
     position: relative;
     padding-top: 80px;
+    
+    .edit {
+	input[type="text"]{
+	    width: 720px;
+	}
+    }
 
     .header{
 	position: absolute;
@@ -28,15 +35,6 @@ body{
 	width: 100%;
 	border-style: none;
     }
-
-    .editable{
-	padding: 10px;
-	cursor: pointer;
-    }
-    .editable:hover{
-	padding: 8px;
-	border: dashed 2px #ccc;
-    }
     
     .hidden{
 	display: none;
@@ -44,23 +42,76 @@ body{
     .show{
 	display: block;
     }
-
-    .header{
-	h2:before{
-	    content: 'タイトル：';	    
+    .title:before{
+	content: 'タイトル：';
+    }
+    .title{
+	margin-left: 1em;
+	font-size: small;
+	display: inline-block;
+	.editable{
 	}
     }
 
+    .h{
+	.unit();
+	h2{
+	    padding: 0;
+	    margin: 0;
+	}
+    }
     .p{
     }
 
     .select1{
 	list-style: none;
 	padding: 0;
-	display: table;
-
 	li{
-	    display: table-cell;
+	    span{
+		display: block;
+	    }
 	}
+    }
+
+    .matrix-form:before{
+	content: 'マトリックス';
+	display: block;
+	border-bottom: solid 1px #ccc;
+    }
+    .matrix-form{
+	border-bottom: solid 1px #ccc;
+	.column-array:before{
+	    display: block;
+	    content: '尺度';
+	    background-color: #ccc;
+	    float: left;
+	    width: 1em;
+	    padding: 8px;
+	}
+	.row-array:before{
+	    display: block;
+	    content: '質問項目';
+	    background-color: #ccc;
+	    float: left;
+	    width: 1em;
+	    padding: 8px;
+	}
+	.row-array{
+	    padding-left: 0;
+	    margin-left: 0;
+
+	    .group{
+		margin-left: 4em;
+	    }
+	}
+	overflow: auto;
+
+	.selectone{
+	    margin-left: 2em;
+	}
+    }
+
+    .textarea{
+	content: '表示する'
     }
 }
