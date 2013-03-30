@@ -7,7 +7,10 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	attrname: "text",
 	render: function(){
 	    this.model.bind("change", this._update, this);
-	    this.$el = this.template.tmpl(this.model.toJSON());
+	    this.model.bind('destroy', this._destroy, this);
+	    var data = this.model.toJSON();
+	    data.id = this.model.cid;
+	    this.$el = this.template.tmpl(data);
 	    this.el = this.$el.get(0);
 
 	    this.editable = this.$el.find(".editable");
@@ -20,10 +23,10 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	events: {
 	    "click .editable": "_edit",
 	    "click .cancel": "_cancel_edit",
-	    "click .update": "_updateModel"
+	    "click .update": "_updateModel",
+	    "click .del": "_delete"
 	},
 	_edit: function(){
-	    console.log(this.$el);
 	    this.editable.toggleClass("hidden");
 	    this.edit.toggleClass("hidden");
 	},
@@ -40,6 +43,15 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	    var val = this.model.get(this.attrname);
 	    this.input.val(val);
 	    this.editable.text(val);
+	},
+	_delete: function(e){
+	    e.preventDefault();
+	    this.model.destroy();
+	},
+	_destroy: function(){
+	    this.$el.remove();
+	    this.el = null;
+	    this.$el = null;
 	}
     });
 
@@ -65,8 +77,8 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	render: function(){
 	    this.$el = this.template.tmpl();
 	    var t = ModelViewMapper.toView(this.model.title());
-	    this.$el.append(t.render().el);
-	    this.el = this.$el;
+	    this.$el.append(t.render().$el);
+	    this.el = this.$el.get(0);
 	    return this;
 	}
     });
@@ -75,13 +87,24 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
      * BoxContent Views
      */
     var SQSBoxContentView = Backbone.View.extend({
-	initialize: function(m){
-	    this.model.bind("add", this.render, this);
-	    this.model.bind("remove", this.render, this);
+	events:{
+	},
+	initialize: function(){
+//	    this.model.bind("add", this.render, this);
+//	    this.listenTo(this.model, 'remove', this.removeElement, this);
 	},
 	render: function(){
-	    var self = this;
-	    self.$el.empty();
+	    if(this.$el){
+		this.$el.empty();
+	    }
+	    if(this._render){
+		this._render();
+	    }
+	    if(this.$el){
+		this.el = this.$el.get(0);
+		this.delegateEvents(this.events);
+	    }
+	    return this;
 	}
     });
 
@@ -90,13 +113,13 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	    outer: $("#sqseditor-template-selectone"),
 	    options: $("#sqseditor-template-options")
 	},
-	render: function(){
+	_render: function(){
 	    var self = this;
 	    self.$el = self.template.outer.tmpl();
 
 	    var title = ModelViewMapper.toView(self.model.get("title"));
 	    if(title){
-		self.$el.append(title.render().el);
+		self.$el.append(title.render().$el);
 	    }
 
 	    self.$options = self.template.options.tmpl();
@@ -104,23 +127,23 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	    self.model.options().each(function(item){
 		var v = ModelViewMapper.toView(item);
 		if(v){
-		    self.$options.append(v.render().el);
+		    self.$options.append(v.render().$el);
 		}
 	    });
-	    this.el = this.$el;
+	    this.el = this.$el.get(0);
 	    return self;
 	}
     });
 
     var SheetView = SQSBoxContentView.extend({
 	template: $("#sqseditor-template-sheet"),
-	render: function(){
+	_render: function(){
 	    var self = this;
 	    this.$el = this.template.tmpl({title: this.model.title});
 	    this.model.each(function(child){
 		var view = ModelViewMapper.toView(child);
 		if(view){
-		    self.$el.append(view.render(child.toJSON()).el);
+		    self.$el.append(view.render(child.toJSON()).$el);
 		}
 	    });
 	    return this;
@@ -131,13 +154,14 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	template: $("#sqseditor-template-group"),
 	render: function(){
 	    var hint = this.model.get("hint");
-	    this.el = this.template.tmpl();
+	    this.$el = this.template.tmpl();
 	    if(hint){
 		var h = ModelViewMapper.toView(hint);
 		if(h){
-		    this.el.append(h.render().el);
+		    this.$el.append(h.render().$el);
 		}
 	    }
+	    this.el = this.$el.get(0);
 	    return this;
 	}
     });
@@ -150,7 +174,7 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	},
 	render: function(){
 	    var self = this;
-	    self.el = self.template.matrix.tmpl();
+	    self.$el = self.template.matrix.tmpl();
 	    var rows = self.template.rows.tmpl();
 	    var columns = self.template.columns.tmpl();
 
@@ -161,7 +185,7 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 		    columns.append(v.el);
 		}
 	    });
-	    self.el.append(columns);
+	    self.$el.append(columns);
 
 	    self.model.get("rows").each(function(item){
 		var v = ModelViewMapper.toView(item);
@@ -169,7 +193,8 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 		    rows.append(v.render().el);
 		}
 	    });
-	    self.el.append(rows);
+	    self.$el.append(rows);
+	    self.el = self.$el.get(0);
 	    
 	    return self;
 	}

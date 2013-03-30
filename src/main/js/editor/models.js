@@ -7,7 +7,8 @@ define(["underscore", "backbone"], function(_, Backbone){
 	    text: " "
 	},
 	destroy: function(){
-	    this.trigger("destroy", this);
+	    console.log("model: destroy");
+	    this.trigger('destroy', this);
 	},
 	copy: function(){
 	    this.trigger("copy", this);
@@ -38,7 +39,7 @@ define(["underscore", "backbone"], function(_, Backbone){
     var Item = Backbone.Model.extend({
 	defaults: {
 	    label: "",
-	    value: 0
+	    value: -1
 	}
     },{
 	next: function(item){
@@ -55,10 +56,10 @@ define(["underscore", "backbone"], function(_, Backbone){
 	    this.bind("add", this._onAdd, this);
 	},
 	_onAdd: function(child){
-	    child.bind("destroy", this._onDestroy, this);
-	    child.bind("copy", this._onCopy, this);
+	    this.listenTo(child, 'destroy', this._onDestroy, this);
+//	    child.bind("copy", this._onCopy, this);
 	},
-	_onDestory: function(child){
+	_onDestroy: function(child){
 	    this.remove(child);
 	},
 	_onCopy: function(child){
