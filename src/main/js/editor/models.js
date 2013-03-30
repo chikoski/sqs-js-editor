@@ -10,8 +10,8 @@ define(["underscore", "backbone"], function(_, Backbone){
 	    console.log("model: destroy");
 	    this.trigger('destroy', this);
 	},
-	copy: function(){
-	    this.trigger("copy", this);
+	duplicate: function(){
+	    this.trigger('duplicate', this);
 	}
     });
 
@@ -57,13 +57,15 @@ define(["underscore", "backbone"], function(_, Backbone){
 	},
 	_onAdd: function(child){
 	    this.listenTo(child, 'destroy', this._onDestroy, this);
-//	    child.bind("copy", this._onCopy, this);
+	    this.listenTo(child, 'duplicate', this._onDuplicate, this);
 	},
 	_onDestroy: function(child){
 	    this.remove(child);
 	},
-	_onCopy: function(child){
-	    // XXX
+	_onDuplicate: function(child){
+	    var clone = child.clone();
+	    this.add(clone);
+	    this.trigger('addDuplicate', child, clone);
 	}
     });
     

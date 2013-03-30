@@ -24,7 +24,8 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	    "click .editable": "_edit",
 	    "click .cancel": "_cancel_edit",
 	    "click .update": "_updateModel",
-	    "click .del": "_delete"
+	    "click .del": "_delete",
+	    "click .duplicate": "_duplicate"
 	},
 	_edit: function(){
 	    this.editable.toggleClass("hidden");
@@ -52,6 +53,9 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	    this.$el.remove();
 	    this.el = null;
 	    this.$el = null;
+	},
+	_duplicate: function(){
+	    this.model.duplicate();
 	}
     });
 
@@ -90,8 +94,7 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	events:{
 	},
 	initialize: function(){
-//	    this.model.bind("add", this.render, this);
-//	    this.listenTo(this.model, 'remove', this.removeElement, this);
+	    this.listenTo(this.model, 'addDuplicate', this._onDuplicate, this);
 	},
 	render: function(){
 	    if(this.$el){
@@ -105,6 +108,16 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 		this.delegateEvents(this.events);
 	    }
 	    return this;
+	},
+	_onDuplicate: function(origin, copy){
+	    if(origin && copy){
+		var view = ModelViewMapper.toView(copy);
+		if(view){
+		    var elm = $("#" + origin.cid);
+		    console.log(elm);
+		    elm.after(view.render().$el);
+		}
+	    }
 	}
     });
 
