@@ -53,7 +53,7 @@ body{
     }
     
     .hidden{
-	display: none;
+	.hidden();
     }
     .show{
 	display: block;
@@ -83,13 +83,15 @@ body{
 	}
     }
 
-    .select1{
-	list-style: none;
-	padding: 0;
+    .selectone{
 	li{
 	    span{
 		display: block;
 	    }
+	    .hidden{
+		.hidden();
+	    }
+	    .unit();
 	}
     }
 
@@ -122,6 +124,7 @@ body{
 
 	    .group{
 		margin-left: 4em;
+		.unit();
 	    }
 	}
 	overflow: auto;
