@@ -7,7 +7,6 @@ define(["underscore", "backbone"], function(_, Backbone){
 	    text: " "
 	},
 	destroy: function(){
-	    console.log("model: destroy");
 	    this.trigger('destroy', this);
 	},
 	duplicate: function(){
