@@ -50,11 +50,17 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 	    this.model.destroy();
 	},
 	_destroy: function(){
-	    this.$el.remove();
-	    this.el = null;
-	    this.$el = null;
+	    var self = this;
+	    this.$el.fadeOut(
+		function(){
+		    self.$el.remove();
+		    this.el = null;
+		    this.$el = null;
+		}
+	    );
 	},
-	_duplicate: function(){
+	_duplicate: function(e){
+	    e.preventDefault();
 	    this.model.duplicate();
 	}
     });
@@ -114,8 +120,8 @@ define(["jquery", "backbone", "models", "template"], function($, Backbone, model
 		var view = ModelViewMapper.toView(copy);
 		if(view){
 		    var elm = $("#" + origin.cid);
-		    console.log(elm);
 		    elm.after(view.render().$el);
+		    view.$el.hide().fadeIn();
 		}
 	    }
 	}
